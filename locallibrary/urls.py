@@ -23,4 +23,16 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('catalog/', include('catalog.urls')),
     path('', RedirectView.as_view(url='catalog/')),
+
+    # Add django site authentication url (for login, logout, password management)
+    path('accounts/', include('django.contrib.auth.urls')),
+    # the above URL mapping automatically maps the below mentioned URLs.
+    # accounts/ login/ [name='login']
+    # accounts/ logout/ [name='logout']
+    # accounts/ password_change/ [name='password_change']
+    # accounts/ password_change/done/ [name='password_change_done']
+    # accounts/ password_reset/ [name='password_reset']
+    # accounts/ password_reset/done/ [name='password_reset_done']
+    # accounts/ reset/<uidb64>/<token>/ [name='password_reset_confirm']
+    # accounts/ reset/done/ [name='password_reset_complete']
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

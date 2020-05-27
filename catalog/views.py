@@ -1,9 +1,12 @@
 from django.shortcuts import get_object_or_404, render
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import generic
 from .models import Book, Author, BookInstance, Genre
 
 
-# View (function-based)
+# View (function-based) -> using @login_required to authencitaion views
+@login_required
 def index(request):
     """ View function for home page of site. """
     # Generate counts of some of the main objects
@@ -29,7 +32,8 @@ def index(request):
     return render(request, 'index.html', context)
 
 
-class BookListView(generic.ListView):
+# LoginRequiredMixin -> handling authentication views
+class BookListView(LoginRequiredMixin, generic.ListView):
     model = Book  # Your model
     paginate_by = 2
 
