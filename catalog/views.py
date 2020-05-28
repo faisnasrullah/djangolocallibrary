@@ -33,7 +33,7 @@ def index(request):
 
 
 # LoginRequiredMixin -> handling authentication views
-class BookListView(LoginRequiredMixin, generic.ListView):
+class BookListView(generic.ListView):
     model = Book  # Your model
     paginate_by = 2
 
@@ -59,7 +59,7 @@ class BookListView(LoginRequiredMixin, generic.ListView):
         return context
 
 
-class BookDetailView(generic.DetailView):
+class BookDetailView(LoginRequiredMixin, generic.DetailView):
     model = Book
     template_name = 'books/book_detail.html'
 
@@ -85,7 +85,7 @@ class AuthorListView(generic.ListView):
         return context
 
 
-class AuthorDetailView(generic.DetailView):
+class AuthorDetailView(LoginRequiredMixin, generic.DetailView):
     model = Author
     template_name = 'authors/author_detail.html'
 
@@ -96,3 +96,13 @@ class AuthorDetailView(generic.DetailView):
             raise get_object_or_404('Author Does Not Exist')
 
         return render(request, template_name, context={'author': author})
+
+
+class LoanedBooksByUserListView(LoginRequiredMixin, generic.ListView):
+    """Generic class-based view listing books on loan to current user."""
+    model = BookInstance
+    template_name = 'bookinstance/bookinstance_list_borrowed_user.html'
+    paginate_by = 10
+
+    def get_queryset(self):
+        return BookInstance.objects.filter(borrower=self.request.user).filter(status__exact='o').order_by('due_back')
