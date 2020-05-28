@@ -3,17 +3,21 @@
 {% block title %}<title>Author Detail - Local Library</title>{% endblock %}
 
 {% block content %}
-  <h1>Author: {{ author.first_name }}, {{ author.last_name }}</h1>
+  {% if perms.catalog.view_author %}
+    <h1>Author: {{ author.first_name }}, {{ author.last_name }}</h1>
 
-  <p>{{ author.date_of_birth }} - {{ author.date_of_death }}</p> 
+    <p>{{ author.date_of_birth }} - {{ author.date_of_death }}</p> 
 
-  <div style="margin-left:20px; margin-top:20px">
-    <h4>Books</h4>
+    <div style="margin-left:20px; margin-top:20px">
+      <h4>Books</h4>
 
-    {% for copy in author.book_set.all %}
-      <hr>
-      <a href="{{ copy.get_absolute_url }}">{{ copy.title }}</a>
-      <p>{{ copy.summary }}</p>
-    {% endfor %}
-  </div>
+      {% for copy in author.book_set.all %}
+        <hr>
+        <a href="{{ copy.get_absolute_url }}">{{ copy.title }}</a>
+        <p>{{ copy.summary }}</p>
+      {% endfor %}
+    </div>
+  {% else %}
+    <h1>You Don't Have Access!!</h1>
+  {% endif %}
 {% endblock %}

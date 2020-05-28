@@ -4,21 +4,25 @@
 
 {% block content %}
   <h1>Author List</h1>
-  {% if author_list %}
-  <ul>
-    {% for author in author_list %}
-      <li>
-        <a href="{{ author.get_absolute_url }}">{{ author.first_name }} {{ author.last_name }}</a> - ({{ author.date_of_birth }} || {{ author.date_of_death }})
-      </li>
+  {% if perms.catalog.view_author %}
+    {% if author_list %}
+    <ul>
+      {% for author in author_list %}
+        <li>
+          <a href="{{ author.get_absolute_url }}">{{ author.first_name }} {{ author.last_name }}</a> - ({{ author.date_of_birth }} || {{ author.date_of_death }})
+        </li>
 
-      {% for copy in author.book_set.all %}
-      <p>
-        <b>Title</b> : {{ copy.title }} ~ <b>Genre</b> : {{ copy.display_genre }}
-      </p>
+        {% for copy in author.book_set.all %}
+        <p>
+          <b>Title</b> : {{ copy.title }} ~ <b>Genre</b> : {{ copy.display_genre }}
+        </p>
+        {% endfor %}
       {% endfor %}
-    {% endfor %}
-  </ul>
+    </ul>
+    {% else %}
+      <p>There are no books in the library.</p>
+    {% endif %}
   {% else %}
-    <p>There are no books in the library.</p>
-  {% endif %}       
+    <h1>You Don't Have Access!!</h1>
+  {% endif %}
 {% endblock %}

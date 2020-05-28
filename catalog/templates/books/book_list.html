@@ -4,23 +4,28 @@
 
 {% block content %}
   <h1>Book List</h1>
-  {% if book_list %}
-  <ul>
-    {% for book in book_list %}
-      <li>
-        <a href="{{ book.get_absolute_url }}">{{ book.title }}</a> ({{book.author}})
-      </li>
-      
-      {% for copy in book.bookinstance_set.all %}
-      <!-- code to iterate across each copy/instance of a book -->
-      <p>
-        {{ copy.id }} - {{ copy.book }} - {{ copy.status }} || {{ copy.due_back }}
-      </p>
+  {% if perms.catalog.view_book %}
+    {% if book_list %}
+    <ul>
+      {% for book in book_list %}
+        <li>
+          <a href="{{ book.get_absolute_url }}">{{ book.title }}</a> ({{book.author}})
+        </li>
+        
+        {% for copy in book.bookinstance_set.all %}
+        <!-- code to iterate across each copy/instance of a book -->
+        <p>
+          {{ copy.id }} - {{ copy.book }} - {{ copy.status }} || {{ copy.due_back }}
+        </p>
+        {% endfor %}
+        
       {% endfor %}
-      
-    {% endfor %}
-  </ul>
-  {% else %}
-    <p>There are no books in the library.</p>
-  {% endif %}       
+    </ul>
+    {% else %}
+      <p>There are no books in the library.</p>
+    {% endif %}
+  {% else %} <p>You don't Access.</p>
+  {% endif %}
+
+         
 {% endblock %}

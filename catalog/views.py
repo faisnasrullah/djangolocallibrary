@@ -1,12 +1,14 @@
 from django.shortcuts import get_object_or_404, render
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+# from django.core.exceptions import PermissionDenied
 from django.views import generic
 from .models import Book, Author, BookInstance, Genre
 
 
 # View (function-based) -> using @login_required to authencitaion views
 @login_required
+# @permission_required('catalog.can_mark_returned')
 def index(request):
     """ View function for home page of site. """
     # Generate counts of some of the main objects
@@ -33,9 +35,10 @@ def index(request):
 
 
 # LoginRequiredMixin -> handling authentication views
-class BookListView(generic.ListView):
+class BookListView(PermissionRequiredMixin, generic.ListView):
     model = Book  # Your model
     paginate_by = 2
+    permission_required = ('catalog.view_book')
 
     # your own name for the list as a template variable
     # context_object_name = 'book_list'
@@ -59,9 +62,10 @@ class BookListView(generic.ListView):
         return context
 
 
-class BookDetailView(LoginRequiredMixin, generic.DetailView):
+class BookDetailView(LoginRequiredMixin, PermissionRequiredMixin, generic.DetailView):
     model = Book
     template_name = 'books/book_detail.html'
+    permission_required = ('catalog.view_book')
 
     def book_detail_view(request, primary_key):
         try:
@@ -72,12 +76,17 @@ class BookDetailView(LoginRequiredMixin, generic.DetailView):
         return render(request, template_name, context={'book': book})
 
 
-class AuthorListView(generic.ListView):
+class AuthorListView(PermissionRequiredMixin, generic.ListView):
     model = Author
     paginate_by = 2
+    raise_exception = True
     template_name = 'authors/author_list.html'
+    permission_required = ('catalog.view_author')
 
     def get_queryset(self):
+        # if not request.user.has_perm(self.permission_required):
+        # raise PermissionDenied(self.get_permission_denied_message())
+
         return Author.objects.all()
 
     def get_context_data(self, **kwargs):
@@ -85,9 +94,10 @@ class AuthorListView(generic.ListView):
         return context
 
 
-class AuthorDetailView(LoginRequiredMixin, generic.DetailView):
+class AuthorDetailView(LoginRequiredMixin, PermissionRequiredMixin, generic.DetailView):
     model = Author
     template_name = 'authors/author_detail.html'
+    permission_required = ('catalog.view_author')
 
     def author_detail_view(request, primary_key):
         try:
@@ -106,3 +116,14 @@ class LoanedBooksByUserListView(LoginRequiredMixin, generic.ListView):
 
     def get_queryset(self):
         return BookInstance.objects.filter(borrower=self.request.user).filter(status__exact='o').order_by('due_back')
+
+
+class LoanedBooksAllListView(PermissionRequiredMixin, generic.ListView):
+    """Generic class-based view listing all books on loan. Only visible to users with can_mark_returned permission."""
+    model = BookInstance
+    permission_required = 'catalog.can_mark_returned'
+    template_name = 'bookinstance/bookinstance_list_borrowed_all.html'
+    paginate_by = 10
+
+    def get_queryset(self):
+        return BookInstance.objects.filter(status__exact='o').order_by('due_back')
