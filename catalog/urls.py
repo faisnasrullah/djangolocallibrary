@@ -8,6 +8,10 @@ urlpatterns = [
     re_path(r'^book/(?P<pk>\d+)$',
             views.BookDetailView.as_view(), name='book-detail'),
 
+    path('book/create/', views.BookCreate.as_view(), name='book_create'),
+    path('book/<int:pk>/update/', views.BookUpdate.as_view(), name='book_update'),
+    path('book/<int:pk>/delete/', views.BookDelete.as_view(), name='book_delete'),
+
     path('author/', views.AuthorListView.as_view(), name='authors'),
     re_path(r'^author/(?P<pk>\d+)$',
             views.AuthorDetailView.as_view(), name='author-detail'),

@@ -75,13 +75,31 @@ class BookDetailView(LoginRequiredMixin, PermissionRequiredMixin, generic.Detail
     template_name = 'books/book_detail.html'
     permission_required = ('catalog.view_book')
 
-    def book_detail_view(request, primary_key):
+    def book_detail_view(self, request, primary_key):
         try:
             book = Book.objects.get(pk=primary_key)
         except Book.DoesNotExist:
             raise get_object_or_404('Book Does Not Exist')
 
         return render(request, template_name, context={'book': book})
+
+
+class BookCreate(CreateView):
+    model = Book
+    fields = '__all__'
+    template_name = 'books/book_form.html'
+
+
+class BookUpdate(UpdateView):
+    model = Book
+    fields = '__all__'
+    template_name = 'books/book_form.html'
+
+
+class BookDelete(DeleteView):
+    model = Book
+    success_url = reverse_lazy('books')
+    template_name = 'books/book_confirm_delete.html'
 
 
 class AuthorListView(PermissionRequiredMixin, generic.ListView):
@@ -107,7 +125,7 @@ class AuthorDetailView(LoginRequiredMixin, PermissionRequiredMixin, generic.Deta
     template_name = 'authors/author_detail.html'
     permission_required = ('catalog.view_author')
 
-    def author_detail_view(request, primary_key):
+    def author_detail_view(self, request, primary_key):
         try:
             author = Author.objects.get(pk=primary_key)
         except Author.DoesNotExist:
