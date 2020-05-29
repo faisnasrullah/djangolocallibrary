@@ -87,13 +87,16 @@ class BookDetailView(LoginRequiredMixin, PermissionRequiredMixin, generic.Detail
 class BookCreate(CreateView):
     model = Book
     fields = '__all__'
-    template_name = 'books/book_form.html'
+    # by default template name -> model_name_form.html
+    template_name_suffix = '_crud'
+    template_name = 'books/book_crud.html'
 
 
 class BookUpdate(UpdateView):
     model = Book
     fields = '__all__'
-    template_name = 'books/book_form.html'
+    template_name_suffix = '_crud'
+    template_name = 'books/book_crud.html'
 
 
 class BookDelete(DeleteView):
